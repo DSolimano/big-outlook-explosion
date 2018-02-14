@@ -34,6 +34,7 @@ End Sub
 Sub MoveAndClearFolderInBatch(olFolder As folder)
 
 Dim olOldItem As MailItem
+Dim olOldItemVar As Variant
 
 Dim mailItems() As MailItem
 
@@ -54,17 +55,23 @@ ReDim mailItems(0 To itemCount)
 Dim count As Long
 count = 0
 
-For Each olOldItem In olFolder.Items
-    If count < itemCount Then
-        Set mailItems(count) = olOldItem
-        count = count + 1
+For Each olOldItemVariant In olFolder.Items
+    Dim tn As String
+    tn = TypeName(olOldItemVariant)
+    
+    If (tn = "MailItem") Then
+        Set olOldItem = olOldItemVariant
+        If count < itemCount Then
+            Set mailItems(count) = olOldItem
+            count = count + 1
+        End If
+        
+        If count >= itemCount Then
+            Exit For
+        End If
     End If
     
-    If count >= itemCount Then
-        Exit For
-    End If
-    
-Next olOldItem
+Next olOldItemVariant
 
 'Count ends up one too high
 count = count - 1
